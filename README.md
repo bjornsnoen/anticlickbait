@@ -16,13 +16,16 @@ It also has basic support for VGs partner outlets like e24, tek.no, etc.
 
 ## Screenshots
 ![Normal article](./docs/unexpanded.png)
-![Expanded article](./docs/hover.png)
+*Normal view of VG.no front page*
 
+![Expanded article](./docs/hover.png)
+*Same page but now hovering over one of the articles*
 
 ## Installing
 
-1. Build the extension
+1. Build the extension by running the following commands in this directory in a shell
 ```shell
+$ yarn
 $ yarn build
 ```
 2. Go to extension manager in chrome
@@ -42,6 +45,7 @@ $ yarn dev
 ### Chrome Extension Developer Mode
 
 1. set your Chrome browser 'Developer mode' up
+    * if you previously built and installed normally, remove the old version of the extension
 2. click 'Load unpacked', and select `anticlickbait/build` folder
 
 ### Nomal FrontEnd Developer Mode

@@ -1,0 +1,20 @@
+.article:has(#article-addendum) {
+  /* The largest one I've found so far is 1000 in an ad */
+  z-index: 9999;
+  isolation: isolate;
+}
+
+.article:has(#article-addendum):hover {
+  box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+#article-addendum {
+  position: absolute;
+  overflow-y: visible;
+  background-color: white;
+  padding: 1rem;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
+}

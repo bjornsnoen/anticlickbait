@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest({
   name: 'Anti-clickbait',
   description: 'Shows you the real title of an article before you click it on VG.no',
-  version: '0.0.1',
+  version: '0.1.0',
   manifest_version: 3,
   icons: {
     '16': 'img/logo-16.png',

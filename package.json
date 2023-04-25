@@ -27,7 +27,9 @@
     "linkedom": "^0.14.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite-plugin-node-polyfills": "^0.8.1"
+    "schema-dts": "^1.1.2",
+    "vite-plugin-node-polyfills": "^0.8.1",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.14",

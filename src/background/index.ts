@@ -1,30 +1,70 @@
-import { isUrlRequest, SuccessMessage } from '../types'
+import { IPartialNewsArticle, isUrlRequest, NewsArticleSchema, SuccessMessage } from '../types'
 import type { ServiceWorkerResponse } from '../types'
 import { parseHTML } from 'linkedom'
 
 const tagFinders: Omit<Record<keyof SuccessMessage, string[]>, 'success'> = {
   heading: ['[data-test-tag="headline"]', 'h1'],
   subheading: ['[data-test-tag="lead-text"]', 'h2'],
-  byline: ['[data-test-tag="byline"]'],
+  byline: ['[data-test-tag="byline:authors"]', '[data-test-tag="byline"]'],
   ingress: ['[data-test-tag="byline"] ~ p'],
+}
+
+const getJsonLdData = (
+  document: ReturnType<typeof parseHTML>['document'],
+): IPartialNewsArticle | undefined => {
+  const jsonLdData = document.querySelector('script[type="application/ld+json"]')
+  if (jsonLdData) {
+    const schemas = JSON.parse(jsonLdData.textContent ?? '[]')
+    for (const schema of schemas) {
+      try {
+        return NewsArticleSchema.parse(schema)
+      } catch (error: unknown) {
+        continue
+      }
+    }
+  }
+  return undefined
+}
+
+const getServiceWorkerResponseFromLdData = (
+  IPartialNewsArticle: IPartialNewsArticle,
+): SuccessMessage => {
+  return {
+    success: true,
+    heading: IPartialNewsArticle.headline,
+    subheading: IPartialNewsArticle.description,
+    byline: IPartialNewsArticle.author?.map((author) => author.name).join(', '),
+  }
 }
 
 const extractInformation = async (response: Response): Promise<ServiceWorkerResponse> => {
   const domString = await response.text()
   try {
     const { document } = parseHTML(domString)
+    const partialNewsArticle = getJsonLdData(document)
     const finder = (tag: keyof typeof tagFinders): string =>
       tagFinders[tag].reduce((acc, selector) => {
         if (acc) return acc
-        return document.querySelector(selector)?.textContent ?? ''
+
+        const element = document.querySelector(selector) as HTMLElement | null
+        if (element?.tagName === 'UL') {
+          return Array.from(element.querySelectorAll('li'))
+            .map((li) => li.textContent)
+            .join(', ')
+        }
+        return element?.textContent ?? ''
       }, '')
 
-    return {
+    const bestGuessesFromDocument: SuccessMessage = {
       success: true,
       heading: finder('heading'),
       byline: finder('byline'),
       ingress: finder('ingress'),
       subheading: finder('subheading'),
+    }
+    return {
+      ...bestGuessesFromDocument,
+      ...(partialNewsArticle ? getServiceWorkerResponseFromLdData(partialNewsArticle) : {}),
     }
   } catch (error: unknown) {
     return {

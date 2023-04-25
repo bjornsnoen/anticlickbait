@@ -4,14 +4,21 @@
   isolation: isolate;
 }
 
-.article:has(#article-addendum):hover {
+.article:has(#article-addendum):hover,
+.article:has(#article-addendum):focus-within {
   box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+section:has(#article-addendum) {
+  z-index: 9999;
+  isolation: isolate;
+  position: relative;
 }
 
 #article-addendum {
   position: absolute;
   overflow-y: visible;
-  background-color: white;
+  background-color: var(--color-article-background);
   padding: 1rem;
   z-index: 99;
   left: 0;

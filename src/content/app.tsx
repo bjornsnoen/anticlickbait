@@ -5,18 +5,18 @@ export const App: React.FC = () => {
   const [hovering, setHovering] = useState<URL>()
   const articleRef = useRef<HTMLElement>()
 
-  const listener = async (event: MouseEvent) => {
-    const article = event.target as HTMLElement
+  const listener = async (event: Event) => {
+    const article = (event.target as HTMLElement).closest('.article') as HTMLElement
     const url =
       article.querySelector('a[itemprop="url"]')?.getAttribute('href') ??
       article.getAttribute('href')
     if (!url) return
 
     const urlObj = new URL(url, window.location.origin)
-    if (event.type === 'mouseleave') {
+    if (event.type === 'mouseleave' || event.type === 'blur') {
       setHovering(undefined)
       articleRef.current = undefined
-    } else if (event.type === 'mouseenter') {
+    } else if (event.type === 'mouseenter' || event.type === 'focusin') {
       setHovering(urlObj)
       articleRef.current = article
     }
@@ -35,12 +35,16 @@ export const App: React.FC = () => {
     filtered.map((article) => {
       article.addEventListener('mouseenter', listener)
       article.addEventListener('mouseleave', listener)
+      article.addEventListener('focusin', listener)
+      article.addEventListener('blur', listener)
     })
 
     return () => {
       filtered.map((article) => {
         article.removeEventListener('mouseenter', listener)
         article.removeEventListener('mouseleave', listener)
+        article.removeEventListener('focusin', listener)
+        article.removeEventListener('blur', listener)
       })
     }
   }, [])

@@ -15,6 +15,11 @@ section:has(#article-addendum) {
   position: relative;
 }
 
+main:has(#article-addendum) {
+  /* Avoid overlapping the nav */
+  isolation: isolate;
+}
+
 #article-addendum {
   position: absolute;
   overflow-y: visible;

@@ -2,7 +2,6 @@
 import { defineConfig } from 'vite'
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 //@ts-ignore
 import manifest from './src/manifest'
@@ -10,7 +9,7 @@ import manifest from './src/manifest'
 import { config } from './src/read_pages_folder'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   return {
     build: {
       emptyOutDir: true,
@@ -23,6 +22,6 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    plugins: [crx({ manifest }), react(), nodePolyfills()],
+    plugins: [crx({ manifest }), react()],
   }
 })

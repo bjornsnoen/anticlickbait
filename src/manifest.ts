@@ -41,5 +41,7 @@ export default defineManifest({
     'https://www.minmote.no/*',
     'https://www.tek.no/*',
     'https://www.godt.no/*',
+    'https://www.landevei.no/*',
+    'https://www.vektklubb.no/*',
   ],
 })

@@ -4,22 +4,32 @@ import { parseHTML } from 'linkedom'
 
 const tagFinders: Omit<Record<keyof SuccessMessage, string[]>, 'success'> = {
   heading: ['[data-test-tag="headline"]', 'h1'],
-  subheading: ['[data-test-tag="lead-text"]', 'h2'],
-  byline: ['[data-test-tag="byline:authors"]', '[data-test-tag="byline"]'],
+  subheading: ['[data-test-tag="lead-text"]', '.test__lead-text', 'h2'],
+  byline: ['[data-test-tag="byline:authors"]', '[data-test-tag="byline"]', '.test__author-byline'],
   ingress: ['[data-test-tag="byline"] ~ p'],
 }
 
 const getJsonLdData = (
   document: ReturnType<typeof parseHTML>['document'],
 ): IPartialNewsArticle | undefined => {
-  const jsonLdData = document.querySelector('script[type="application/ld+json"]')
+  const jsonLdData = document.querySelectorAll('script[type="application/ld+json"]')
   if (jsonLdData) {
-    const schemas = JSON.parse(jsonLdData.textContent ?? '[]')
-    for (const schema of schemas) {
-      try {
-        return NewsArticleSchema.parse(schema)
-      } catch (error: unknown) {
-        continue
+    for (const jsonLd of jsonLdData) {
+      const schemas = JSON.parse(jsonLd.textContent ?? '[]')
+      if (Array.isArray(schemas)) {
+        for (const schema of schemas) {
+          try {
+            return NewsArticleSchema.parse(schema)
+          } catch (error: unknown) {
+            continue
+          }
+        }
+      } else {
+        try {
+          return NewsArticleSchema.parse(schemas)
+        } catch (error: unknown) {
+          continue
+        }
       }
     }
   }

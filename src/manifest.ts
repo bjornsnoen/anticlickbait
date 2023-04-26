@@ -1,21 +1,23 @@
 import { defineManifest } from '@crxjs/vite-plugin'
+import { version } from '../package.json'
+import { LogoSizes } from './constants'
+
+const icons: Record<string, string> = Object.fromEntries(
+  LogoSizes.map((size) => [size.toString(), `img/logo-${size}.png`]),
+)
+const resources = Object.values(icons)
 
 export default defineManifest({
   name: 'Anti-clickbait',
   description: 'Shows you the real title of an article before you click it on VG.no',
-  version: '0.1.1',
+  version,
   manifest_version: 3,
-  icons: {
-    '16': 'img/logo-16.png',
-    '32': 'img/logo-34.png',
-    '48': 'img/logo-48.png',
-    '128': 'img/logo-128.png',
-  },
-  action: {
-    default_popup: 'popup.html',
-    default_icon: 'img/logo-48.png',
-  },
-  options_page: 'options.html',
+  icons,
+  // action: {
+  //   default_popup: 'pages/popup.html',
+  //   default_icon: 'img/logo-256.png',
+  // },
+  // options_page: 'pages/options.html',
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module',
@@ -28,7 +30,7 @@ export default defineManifest({
   ],
   web_accessible_resources: [
     {
-      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png'],
+      resources,
       matches: [],
     },
   ],

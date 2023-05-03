@@ -25,7 +25,7 @@ export const isUrlRequest = (message: any): message is ServiceWorkerRequest => {
 }
 
 const AuthorSchema = z.object({
-  '@type': z.string(),
+  '@type': z.literal('Person'),
   name: z.string(),
   url: z.string().nullable(),
   description: z.string().nullable(),
@@ -34,8 +34,8 @@ const AuthorSchema = z.object({
 type IAuthor = z.infer<typeof AuthorSchema>
 
 const PublisherSchema = z.object({
-  '@context': z.string().optional(),
-  '@type': z.string(),
+  '@context': z.literal('https://schema.org').optional(),
+  '@type': z.literal('Publisher'),
   name: z.string(),
   url: z.string().optional(),
   foundingDate: z.string().optional(),
@@ -56,7 +56,8 @@ const PublisherSchema = z.object({
 })
 
 export const NewsArticleSchema = z.object({
-  '@type': z.string(),
+  '@context': z.literal('https://schema.org'),
+  '@type': z.union([z.literal('NewsArticle'), z.literal('Article'), z.literal('BlogPosting')]),
   headline: z.string(),
   datePublished: z.string(),
   dateModified: z.string(),
@@ -66,7 +67,7 @@ export const NewsArticleSchema = z.object({
   keywords: z.string().optional(),
   image: z.union([
     z.object({
-      '@context': z.string(),
+      '@context': z.literal('https://schema.org'),
       '@type': z.string(),
       url: z.string(),
       width: z.number(),
@@ -88,11 +89,10 @@ export const NewsArticleSchema = z.object({
   ]),
   mainEntityOfPage: z.string(),
   isAccessibleForFree: z.boolean().optional(),
-  '@context': z.string(),
   mentions: z
     .array(
       z.object({
-        '@context': z.string(),
+        '@context': z.literal('https://schema.org'),
         '@type': z.string(),
         url: z.string(),
         name: z.string(),
@@ -102,3 +102,54 @@ export const NewsArticleSchema = z.object({
 })
 
 export type IPartialNewsArticle = z.infer<typeof NewsArticleSchema>
+
+export const VideoObjectSchema = z.object({
+  '@type': z.literal('VideoObject'),
+  '@context': z.literal('https://schema.org'),
+  name: z.string(),
+  datePublished: z.string().datetime({}),
+  dateCreated: z.string().datetime(),
+  dateModified: z.string().datetime(),
+  thumbnailUrl: z.string().url(),
+  description: z.string(),
+  '@id': z.string().url(),
+  embedUrl: z.string().url(),
+  uploadDate: z.string().datetime(),
+  keywords: z
+    .string()
+    .optional()
+    .transform((value) => value?.split(',')),
+  contentUrl: z.string().url(),
+  interactionStatistic: z.object({
+    '@type': z.literal('InteractionCounter'),
+    interactionType: z.object({
+      '@type': z.literal('WatchAction'),
+    }),
+    userInteractionCount: z.number(),
+  }),
+  duration: z.string(),
+})
+
+export type IVideoObject = z.infer<typeof VideoObjectSchema>
+
+export const ldParser = (schema: unknown): Omit<SuccessMessage, 'success'> => {
+  const article = NewsArticleSchema.safeParse(schema)
+  const video = VideoObjectSchema.safeParse(schema)
+
+  if (article.success) {
+    return {
+      heading: article.data.headline,
+      subheading: article.data.description,
+      byline: article.data.author?.map((author) => author.name).join(', '),
+    }
+  }
+
+  if (video.success) {
+    return {
+      heading: video.data.name,
+      subheading: video.data.description,
+      ingress: video.data.description,
+    }
+  }
+  throw new Error('Could not parse schema')
+}

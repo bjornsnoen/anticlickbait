@@ -1,17 +1,17 @@
-import { IPartialNewsArticle, isUrlRequest, NewsArticleSchema, SuccessMessage } from '../types'
+import { isUrlRequest, ldParser, SuccessMessage } from '../types'
 import type { ServiceWorkerResponse } from '../types'
 import { parseHTML } from 'linkedom'
 
 const tagFinders: Omit<Record<keyof SuccessMessage, string[]>, 'success'> = {
   heading: ['[data-test-tag="headline"]', 'h1'],
-  subheading: ['[data-test-tag="lead-text"]', '.test__lead-text', 'h2'],
+  subheading: ['[data-test-tag="lead-text"]', '.test__lead-text', 'meta[name="description"]', 'h2'],
   byline: ['[data-test-tag="byline:authors"]', '[data-test-tag="byline"]', '.test__author-byline'],
   ingress: ['[data-test-tag="byline"] ~ p'],
 }
 
 const getJsonLdData = (
   document: ReturnType<typeof parseHTML>['document'],
-): IPartialNewsArticle | undefined => {
+): SuccessMessage | undefined => {
   const jsonLdData = document.querySelectorAll('script[type="application/ld+json"]')
   if (jsonLdData) {
     for (const jsonLd of jsonLdData) {
@@ -19,14 +19,14 @@ const getJsonLdData = (
       if (Array.isArray(schemas)) {
         for (const schema of schemas) {
           try {
-            return NewsArticleSchema.parse(schema)
+            return { ...ldParser(schema), success: true }
           } catch (error: unknown) {
             continue
           }
         }
       } else {
         try {
-          return NewsArticleSchema.parse(schemas)
+          return { ...ldParser(schemas), success: true }
         } catch (error: unknown) {
           continue
         }
@@ -34,17 +34,6 @@ const getJsonLdData = (
     }
   }
   return undefined
-}
-
-const getServiceWorkerResponseFromLdData = (
-  IPartialNewsArticle: IPartialNewsArticle,
-): SuccessMessage => {
-  return {
-    success: true,
-    heading: IPartialNewsArticle.headline,
-    subheading: IPartialNewsArticle.description,
-    byline: IPartialNewsArticle.author?.map((author) => author.name).join(', '),
-  }
 }
 
 const extractInformation = async (response: Response): Promise<ServiceWorkerResponse> => {
@@ -62,6 +51,9 @@ const extractInformation = async (response: Response): Promise<ServiceWorkerResp
             .map((li) => li.textContent)
             .join(', ')
         }
+        if (element?.tagName === 'META' && element?.hasAttribute('content')) {
+          return element.getAttribute('content') ?? ''
+        }
         return element?.textContent ?? ''
       }, '')
 
@@ -74,7 +66,7 @@ const extractInformation = async (response: Response): Promise<ServiceWorkerResp
     }
     return {
       ...bestGuessesFromDocument,
-      ...(partialNewsArticle ? getServiceWorkerResponseFromLdData(partialNewsArticle) : {}),
+      ...(partialNewsArticle ? partialNewsArticle : {}),
     }
   } catch (error: unknown) {
     return {

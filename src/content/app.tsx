@@ -20,6 +20,11 @@ export const App: React.FC = () => {
       setHovering(urlObj)
       articleRef.current = article
     }
+    if (event.type === 'focusin') {
+      const isReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true
+
+      article.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth', block: 'center' })
+    }
   }
 
   useEffect(() => {

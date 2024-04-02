@@ -1,0 +1,45 @@
+{
+  "name": "Anti-clickbait",
+  "$schema": "https://json.schemastore.org/chrome-manifest.json",
+  "version": "1.0.0",
+  "description": "Shows you the real title of an article before you click it on VG.no",
+  "manifest_version": 3,
+  "background": {
+    "{{firefox}}.scripts": ["src/background/index.ts"],
+    "{{chrome}}.service_worker": "src/background/index.ts",
+    "{{chrome}}.type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.vg.no/*"],
+      "js": ["src/content/index.tsx"]
+    }
+  ],
+  "permissions": ["contextMenus"],
+  "{{firefox}}.host_permissions": [
+    "https://*.vg.no/*",
+    "https://*.e24.no/*",
+    "https://www.minmote.no/*",
+    "https://www.tek.no/*",
+    "https://www.godt.no/*",
+    "https://www.landevei.no/*",
+    "https://www.vektklubb.no/*"
+  ],
+  "{{chrome}}.host_permissions": ["https://*.vg.no/*"],
+  "{{chrome}}.optional_host_permissions": [
+    "https://*.e24.no/*",
+    "https://www.minmote.no/*",
+    "https://www.tek.no/*",
+    "https://www.godt.no/*",
+    "https://www.landevei.no/*",
+    "https://www.vektklubb.no/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{2cd7f106-550c-4365-af67-24e3ed228b7b}"
+    }
+  }
+}

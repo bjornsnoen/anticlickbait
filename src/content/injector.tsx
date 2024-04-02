@@ -2,13 +2,16 @@ import { QueryFunction, useQuery } from '@tanstack/react-query'
 import React, { MutableRefObject } from 'react'
 import ReactDOM from 'react-dom'
 import { ServiceWorkerResponse, SuccessMessage } from '../types'
+import browser from 'webextension-polyfill'
 
 const fetchArticle: QueryFunction<SuccessMessage> = async ({
   queryKey,
 }): Promise<SuccessMessage> => {
   const articleUrl = queryKey[0] as URL
   const response = await new Promise<ServiceWorkerResponse>((resolve) => {
-    chrome.runtime.sendMessage({ checkIfUrlExists: articleUrl.toString() }, resolve)
+    browser.runtime
+      .sendMessage({ type: 'clickbait', checkIfUrlExists: articleUrl.toString() })
+      .then(resolve)
   })
 
   if (!response.success) {

@@ -4,6 +4,7 @@ import { App } from './app'
 
 import styles from './index.css?inline'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { EyesoreHider } from './EyesoreHider'
 
 const queryClient = new QueryClient()
 
@@ -15,6 +16,7 @@ if (document.querySelector('body')) {
   ReactDOM.createRoot(document.getElementById('anticlickbait') as HTMLElement).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
+        <EyesoreHider />
         <App />
       </QueryClientProvider>
       <style>{styles}</style>

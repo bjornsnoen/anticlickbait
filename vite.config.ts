@@ -2,13 +2,15 @@ import { defineConfig } from 'vite'
 
 import webExtension, { readJsonFile } from 'vite-plugin-web-extension'
 import { Manifest } from 'webextension-polyfill'
-import { LogoSizes } from './src/constants'
+import { LogoSizes, HostPermissions } from './src/constants'
 const icons: Record<string, string> = Object.fromEntries(
   LogoSizes.map((size) => [size.toString(), `img/logo-${size}.png`]),
 )
 const resources = Object.values(icons)
 
 const target = process.env.TARGET || 'chrome'
+
+const [mainPermission, ...optionalPermissions] = HostPermissions
 
 export default defineConfig({
   plugins: [
@@ -24,11 +26,6 @@ export default defineConfig({
         const template: Manifest.WebExtensionManifest = readJsonFile('manifest.json')
         return {
           ...template,
-          // action: {
-          //   default_popup: 'pages/popup.html',
-          //   default_icon: 'img/logo-256.png',
-          // },
-          // options_page: 'pages/options.html',
           web_accessible_resources: [
             {
               resources,
@@ -37,6 +34,9 @@ export default defineConfig({
           ],
           version: pkg.version,
           icons,
+          '{{firefox}}.host_permissions': [mainPermission, ...optionalPermissions],
+          '{{chrome}}.host_permissions': [mainPermission],
+          '{{chrome}}.optional_host_permissions': [...optionalPermissions],
         }
       },
     }),

@@ -1,6 +1,6 @@
 {
   "name": "anticlickbait",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "Bjørn Polat-Snoen",
   "description": "",
   "type": "module",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@tanstack/react-query": "^4.29.3",
     "linkedom": "^0.14.25",
     "react": "^18.2.0",

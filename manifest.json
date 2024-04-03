@@ -16,24 +16,9 @@
     }
   ],
   "permissions": ["contextMenus"],
-  "{{firefox}}.host_permissions": [
-    "https://*.vg.no/*",
-    "https://*.e24.no/*",
-    "https://www.minmote.no/*",
-    "https://www.tek.no/*",
-    "https://www.godt.no/*",
-    "https://www.landevei.no/*",
-    "https://www.vektklubb.no/*"
-  ],
-  "{{chrome}}.host_permissions": ["https://*.vg.no/*"],
-  "{{chrome}}.optional_host_permissions": [
-    "https://*.e24.no/*",
-    "https://www.minmote.no/*",
-    "https://www.tek.no/*",
-    "https://www.godt.no/*",
-    "https://www.landevei.no/*",
-    "https://www.vektklubb.no/*"
-  ],
+  "options_ui": {
+    "page": "pages/options.html"
+  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'"
   },

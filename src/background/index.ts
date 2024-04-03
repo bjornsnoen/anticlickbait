@@ -21,6 +21,7 @@ browser.runtime.onInstalled.addListener(() => {
     contexts: ['link'],
     documentUrlPatterns: ['https://www.vg.no/*'],
   })
+  browser.runtime.openOptionsPage()
 })
 
 browser.contextMenus.onClicked.addListener(({ linkUrl }) => linkUrl && storeEyesore(linkUrl))

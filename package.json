@@ -1,6 +1,6 @@
 {
   "name": "anticlickbait",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": "Bjørn Polat-Snoen",
   "description": "",
   "type": "module",
@@ -19,10 +19,10 @@
     "dev": "vite",
     "preview": "vite preview",
     "build": "tsc && vite build && npm run package",
-    "build:chrome": "tsc && TARGET=chrome vite build",
-    "build:firefox": "tsc && TARGET=firefox vite build",
+    "build:chrome": "TARGET=chrome vite build",
+    "build:firefox": "TARGET=firefox vite build",
     "package": "rm -f ./dist/anticlickbait.zip && web-ext build --source-dir dist --artifacts-dir dist --overwrite-dest",
-    "sign": "web-ext sign --source-dir dist --artifacts-dir dist --api-key $AMO_JWT_ISSUER --api-secret $AMO_JWT_SECRET --use-submission-api --channel unlisted",
+    "sign": "web-ext sign --source-dir dist --artifacts-dir dist --api-key $AMO_JWT_ISSUER --api-secret $AMO_JWT_SECRET --use-submission-api --channel listed",
     "build:firefox:sign": "npm run build:firefox && npm run sign",
     "fmt": "prettier --write '**/*.{tsx,ts,json,css,scss,md}'"
   },

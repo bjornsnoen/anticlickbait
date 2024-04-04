@@ -25,8 +25,8 @@ It also has basic support for VGs partner outlets like e24, tek.no, etc.
 
 1. Build the extension by running the following commands in this directory in a shell
 ```shell
-$ yarn
-$ yarn build
+$ pnpm install
+$ pnpm build
 ```
 2. Go to extension manager in chrome
 3. Enable developer mode
@@ -39,7 +39,7 @@ run the command
 ```shell
 $ cd anticlickbait
 
-$ yarn dev
+$ pnpm dev
 ```
 
 ### Chrome Extension Developer Mode
@@ -51,5 +51,4 @@ $ yarn dev
 ### Nomal FrontEnd Developer Mode
 
 1. access `http://localhost:3000/`
-2. when debugging popup page, open `/popup.html`
-3. when debugging options page, open `/options.html`
+2. when debugging options page, open `/options.html`

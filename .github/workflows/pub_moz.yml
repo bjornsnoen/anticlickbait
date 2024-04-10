@@ -17,10 +17,18 @@ jobs:
         with:
           run_install: true
 
+      - name: Check if new package version
+        id: check_version
+        uses: johnnybenson/package-json-versioned-action@v1.0.8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build the extension
+        if: steps.check_version.outputs.has-updated == 'true'
         run: pnpm build:firefox
 
       - name: Publish to AMO
+        if: steps.check_version.outputs.has-updated == 'true'
         run: pnpm sign
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}

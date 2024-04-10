@@ -3,8 +3,10 @@ on:
     branches:
       - main
 
+name: Build and publish extension to browser stores
+
 jobs:
-  build:
+  build_and_publish:
     runs-on: ubuntu-latest
     strategy:
       matrix:

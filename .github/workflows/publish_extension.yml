@@ -59,3 +59,15 @@ jobs:
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+
+      - name: Publish to Chrome Web store
+        if: |
+          matrix.target == 'chrome'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          extension-id: ${{ secrets.GWS_EXTENSION_ID }}
+          client-id: ${{ secrets.GWS_CLIENT_ID }}
+          client-secret: ${{ secrets.GWS_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.GWS_REFRESH_TOKEN }}
+          glob: true
+          file-path: dist/anti-clickbait-*.zip

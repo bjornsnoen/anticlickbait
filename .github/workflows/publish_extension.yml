@@ -51,6 +51,10 @@ jobs:
         if: steps.check_version.outputs.has-updated == 'true' || matrix.target == 'chrome'
         run: pnpm build:${{ matrix.target }}
 
+      - name: Package zip for chrome
+        if: matrix.target == 'chrome'
+        run: pnpm package
+
       - name: Publish to AMO
         if: |
           steps.check_version.outputs.has-updated == 'true' &&

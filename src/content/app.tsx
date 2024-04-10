@@ -4,6 +4,22 @@ import { PortalInjector } from './injector'
 export const App: React.FC = () => {
   const [hovering, setHovering] = useState<URL>()
   const articleRef = useRef<HTMLElement>()
+  const isClickingTracker = useRef(false)
+
+  /**
+   * We had an issue where middle clicking an article would scroll it into view as if it was focused.
+   * This keeps track of whether the user is clicking or not, and the state is used to determine if the article should be scrolled into view.
+   */
+  const clickListener = (event: MouseEvent) => {
+    if (event.type === 'mousedown') {
+      isClickingTracker.current = true
+      // Reset after 100ms
+      // mouseup event is not reliable for middle click
+      setTimeout(() => {
+        isClickingTracker.current = false
+      }, 100)
+    }
+  }
 
   const listener = async (event: Event) => {
     const article = (event.target as HTMLElement).closest('.article') as HTMLElement
@@ -23,7 +39,9 @@ export const App: React.FC = () => {
     if (event.type === 'focusin') {
       const isReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true
 
-      article.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth', block: 'center' })
+      if (!isClickingTracker.current) {
+        article.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth', block: 'center' })
+      }
     }
   }
 
@@ -42,6 +60,7 @@ export const App: React.FC = () => {
       article.addEventListener('mouseleave', listener)
       article.addEventListener('focusin', listener)
       article.addEventListener('blur', listener)
+      article.addEventListener('mousedown', clickListener)
     })
 
     return () => {
@@ -50,6 +69,7 @@ export const App: React.FC = () => {
         article.removeEventListener('mouseleave', listener)
         article.removeEventListener('focusin', listener)
         article.removeEventListener('blur', listener)
+        article.removeEventListener('mousedown', clickListener)
       })
     }
   }, [])

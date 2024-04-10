@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TARGET: firefox
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          run_install: true
+
+      - name: Build the extension
+        run: pnpm build:firefox
+
+      - name: Publish to AMO
+        run: pnpm run publish
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}

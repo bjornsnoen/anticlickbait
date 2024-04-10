@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the extension for ${{ matrix.target }}
-        if: steps.check_version.outputs.has-updated == 'true'
+        if: steps.check_version.outputs.has-updated == 'true' || matrix.target == 'chrome'
         run: pnpm build:${{ matrix.target }}
 
       - name: Publish to AMO

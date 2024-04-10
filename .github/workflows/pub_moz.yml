@@ -6,8 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - firefox
+          - chrome
     env:
-      TARGET: firefox
+      TARGET: ${{ matrix.target }}
 
     steps:
       - uses: actions/checkout@v4
@@ -40,12 +45,14 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build the extension
+      - name: Build the extension for ${{ matrix.target }}
         if: steps.check_version.outputs.has-updated == 'true'
-        run: pnpm build:firefox
+        run: pnpm build:${{ matrix.target }}
 
       - name: Publish to AMO
-        if: steps.check_version.outputs.has-updated == 'true'
+        if: |
+          steps.check_version.outputs.has-updated == 'true' &&
+          matrix.target == 'firefox'
         run: pnpm sign
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}

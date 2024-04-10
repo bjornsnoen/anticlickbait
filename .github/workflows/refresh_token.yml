@@ -1,0 +1,14 @@
+name: 'Refresh google token periodically'
+on:
+  schedule:
+    - cron: '0 3 7 * *' # At 03:00 on day-of-month 7
+
+jobs:
+  fetch_token:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cardinalby/google-api-fetch-token-action@v1
+        with:
+          clientId: ${{ secrets.GWS_CLIENT_ID }}
+          clientSecret: ${{ secrets.GWS_CLIENT_SECRET }}
+          refreshToken: ${{ secrets.GWS_REFRESH_TOKEN }}

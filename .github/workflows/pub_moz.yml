@@ -21,7 +21,7 @@ jobs:
         id: check_version
         uses: johnnybenson/package-json-versioned-action@v1.0.8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the extension
         if: steps.check_version.outputs.has-updated == 'true'

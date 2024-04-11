@@ -43,7 +43,7 @@ jobs:
 
       - name: Check if new package version
         id: check_version
-        uses: johnnybenson/package-json-versioned-action@v1.0.8
+        uses: johnnybenson/package-json-versioned-action@v1.0.9
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

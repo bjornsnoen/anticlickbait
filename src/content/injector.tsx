@@ -1,8 +1,9 @@
 import { QueryFunction, useQuery } from '@tanstack/react-query'
-import React, { MutableRefObject } from 'react'
+import React, { MutableRefObject, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { ServiceWorkerResponse, SuccessMessage } from '../types'
 import browser from 'webextension-polyfill'
+import { useDomObserver } from './ArticleContext'
 
 const fetchArticle: QueryFunction<SuccessMessage> = async ({
   queryKey,
@@ -25,6 +26,16 @@ const ArticleAddendumWrapper: React.FC<{ articleUrl: URL }> = ({ articleUrl }) =
     staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   })
+
+  const { resumeDomObserver } = useDomObserver()
+
+  // Unpause the DOM observer when the component is unmounted
+  useEffect(() => {
+    return () => {
+      resumeDomObserver()
+    }
+  }, [resumeDomObserver])
+
   if (isLoading) return null
   if (isError) return null
 

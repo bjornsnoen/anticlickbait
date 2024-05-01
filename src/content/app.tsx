@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { PortalInjector } from './injector'
+import { useArticles, useDomObserver } from './ArticleContext'
 
 export const App: React.FC = () => {
   const [hovering, setHovering] = useState<URL>()
   const articleRef = useRef<HTMLElement>()
   const isClickingTracker = useRef(false)
+  const { articles } = useArticles()
+  const { pauseDomObserver, resumeDomObserver } = useDomObserver()
 
   /**
    * We had an issue where middle clicking an article would scroll it into view as if it was focused.
@@ -33,6 +36,7 @@ export const App: React.FC = () => {
       setHovering(undefined)
       articleRef.current = undefined
     } else if (event.type === 'mouseenter' || event.type === 'focusin') {
+      pauseDomObserver()
       setHovering(urlObj)
       articleRef.current = article
     }
@@ -46,16 +50,7 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
-    const articles = document.querySelectorAll('.article')
-    const teasers = document.querySelectorAll('[data-test-tag^="teaser-large:link"]')
-
-    const elementArray: HTMLElement[] = Array.from(articles).concat(
-      Array.from(teasers),
-    ) as HTMLElement[]
-
-    const filtered = elementArray.filter((element) => !element.closest('.partnerstudio-front'))
-
-    filtered.map((article) => {
+    articles.map((article) => {
       article.addEventListener('mouseenter', listener)
       article.addEventListener('mouseleave', listener)
       article.addEventListener('focusin', listener)
@@ -64,7 +59,7 @@ export const App: React.FC = () => {
     })
 
     return () => {
-      filtered.map((article) => {
+      articles.map((article) => {
         article.removeEventListener('mouseenter', listener)
         article.removeEventListener('mouseleave', listener)
         article.removeEventListener('focusin', listener)
@@ -72,7 +67,7 @@ export const App: React.FC = () => {
         article.removeEventListener('mousedown', clickListener)
       })
     }
-  }, [])
+  }, [articles])
 
   return <PortalInjector currentUrl={hovering} article={articleRef} />
 }

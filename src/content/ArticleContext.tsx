@@ -47,8 +47,6 @@ export const ArticleProvider: React.FC<React.PropsWithChildren> = ({ children })
   const [observer] = useState<MutationObserver>(() => {
     const observer = new MutationObserver((mutations) => {
       if (didJustAffectAddendum(mutations)) return
-      console.log('Running observer code')
-      console.log(mutations)
       setArticles(extractArticlesFromDom())
     })
     return observer

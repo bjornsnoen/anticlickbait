@@ -41,9 +41,11 @@ const extractArticlesFromDom = (): HTMLElement[] => {
   return filtered
 }
 
+const articlesContainerSelector = '#hovedlopet'
+
 export const ArticleProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [articles, setArticles] = useState<HTMLElement[]>(extractArticlesFromDom)
-  const mainElementRef = useRef(document.querySelector('main') as HTMLElement)
+  const mainElementRef = useRef(document.querySelector(articlesContainerSelector) as HTMLElement)
   const [observer] = useState<MutationObserver>(() => {
     const observer = new MutationObserver((mutations) => {
       if (didJustAffectAddendum(mutations)) return

@@ -7,7 +7,7 @@ export const App: React.FC = () => {
   const articleRef = useRef<HTMLElement>()
   const isClickingTracker = useRef(false)
   const { articles } = useArticles()
-  const { pauseDomObserver, resumeDomObserver } = useDomObserver()
+  const { pauseDomObserver } = useDomObserver()
 
   /**
    * We had an issue where middle clicking an article would scroll it into view as if it was focused.
@@ -28,8 +28,13 @@ export const App: React.FC = () => {
     const article = (event.target as HTMLElement).closest('.article') as HTMLElement
     const url =
       article.querySelector('a[itemprop="url"]')?.getAttribute('href') ??
-      article.getAttribute('href')
-    if (!url) return
+      article.getAttribute('href') ??
+      article.querySelector('a')?.getAttribute('href')
+
+    if (!url) {
+      console.log('[anticlickbait] No url found for article', article)
+      return
+    }
 
     const urlObj = new URL(url, window.location.origin)
     if (event.type === 'mouseleave' || event.type === 'blur') {

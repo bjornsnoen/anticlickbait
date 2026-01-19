@@ -2,6 +2,7 @@ name: 'Refresh google token periodically'
 on:
   schedule:
     - cron: '0 3 7 * *' # At 03:00 on day-of-month 7
+  workflow_dispatch:
 
 jobs:
   fetch_token:

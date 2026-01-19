@@ -38,8 +38,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install ImageMagick
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Install ImageMagick and potrace
+        run: sudo apt-get update && sudo apt-get install -y imagemagick potrace
 
       - name: Install dependencies
         run: pnpm install

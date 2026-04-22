@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import browser from 'webextension-polyfill'
 
 import { HostPermissions, StorageKeys } from '../constants'
+import { getTapToPreviewEnabled } from '../settings'
 import './Options.css'
 import { ChangeEvent, useEffect, useState } from 'react'
 
@@ -80,8 +81,8 @@ function App() {
   }, [])
 
   useEffect(() => {
-    browser.storage.local.get(StorageKeys.tapToPreviewEnabled).then((stored) => {
-      setTapToPreviewEnabled(Boolean(stored[StorageKeys.tapToPreviewEnabled]))
+    getTapToPreviewEnabled().then((enabled) => {
+      setTapToPreviewEnabled(enabled)
     })
   }, [])
 

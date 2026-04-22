@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill'
 import { PortalInjector, ArticleTarget } from './injector'
 import { useArticles, useDomObserver } from './ArticleContext'
 import { StorageKeys } from '../constants'
+import { getTapToPreviewEnabled } from '../settings'
 
 const getArticleUrl = (article: HTMLElement): URL | null => {
   const url =
@@ -124,8 +125,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const loadTapSetting = async () => {
-      const stored = await browser.storage.local.get(StorageKeys.tapToPreviewEnabled)
-      setTapToPreviewEnabled(Boolean(stored[StorageKeys.tapToPreviewEnabled]))
+      setTapToPreviewEnabled(await getTapToPreviewEnabled())
     }
     loadTapSetting()
 

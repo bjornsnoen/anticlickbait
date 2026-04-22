@@ -1,37 +1,53 @@
-.article:has(#article-addendum) {
+.article-addendum-host {
+  position: absolute;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.article:has(.article-addendum),
+article:has(.article-addendum) {
   /* The largest one I've found so far is 1000 in an ad */
   z-index: 9999;
   isolation: isolate;
-}
-
-.article:has(#article-addendum):hover,
-.article:has(#article-addendum):focus-within {
-  box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
-}
-
-section:has(#article-addendum) {
-  z-index: 9999;
-  isolation: isolate;
   position: relative;
-}
-
-section:has(#article-addendum) .articles {
   overflow: visible;
 }
 
-main:has(#article-addendum) {
+article:has(.article-addendum):hover,
+article:has(.article-addendum):focus-within,
+.article:has(.article-addendum):hover,
+.article:has(.article-addendum):focus-within {
+  box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+section:has(.article-addendum) {
+  z-index: 9999;
+  isolation: isolate;
+  position: relative;
+  overflow: visible;
+}
+
+section:has(.article-addendum) .articles {
+  overflow: visible;
+}
+
+main:has(.article-addendum) {
   /* Avoid overlapping the nav */
   isolation: isolate;
 }
 
-#article-addendum {
+.article-addendum {
   position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
   overflow-y: visible;
   background-color: var(--background-secondary, var(--color-background-secondary));
   padding: 1rem;
   z-index: 99;
-  left: 0;
-  right: 0;
   box-shadow: 1rem 1rem 1rem rgba(0, 0, 0, 0.5);
   color: var(--color-body);
+  pointer-events: auto;
 }

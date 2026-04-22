@@ -16,24 +16,37 @@ const ArticleContext = React.createContext<ArticleContextType>({
   },
 })
 
+export const articleSelectors = [
+  'track-element[data-testid="Teaser-main-ssr"] > article',
+  'track-element[data-track-element-type="Teaser"][data-track-target-category="Article"] > article',
+  'track-element[data-track-target-type="ArticleReference"][data-track-target-category="Article"] > article',
+  '[data-test-tag^="teaser-large:link"]',
+  '.article',
+] as const
+
+const observerRootSelectors = ['main#application > section.content > section.feed#feed', '#feed', '#application']
+
+const isAddendumNode = (node: Node | null): node is HTMLElement => {
+  return (
+    node instanceof HTMLElement &&
+    (node.classList.contains('article-addendum') ||
+      node.dataset.anticlickbaitAddendum !== undefined)
+  )
+}
+
 const didJustAffectAddendum = (mutations: MutationRecord[]): boolean => {
   if (mutations.length === 1 && mutations[0].removedNodes.length === 1) {
-    const removedNode = mutations[0].removedNodes[0] as HTMLElement
-    return removedNode.id === 'article-addendum'
+    return isAddendumNode(mutations[0].removedNodes[0])
   }
   if (mutations.length === 1 && mutations[0].addedNodes.length === 1) {
-    const addedNode = mutations[0].addedNodes[0] as HTMLElement
-    return addedNode.id === 'article-addendum'
+    return isAddendumNode(mutations[0].addedNodes[0])
   }
   return false
 }
 
 const extractArticlesFromDom = (): HTMLElement[] => {
-  const articles = document.querySelectorAll('.article')
-  const teasers = document.querySelectorAll('[data-test-tag^="teaser-large:link"]')
-
-  const elementArray: HTMLElement[] = Array.from(articles).concat(
-    Array.from(teasers),
+  const elementArray: HTMLElement[] = articleSelectors.flatMap((selector) =>
+    Array.from(document.querySelectorAll(selector)),
   ) as HTMLElement[]
 
   const filtered = elementArray.filter((element) => !element.closest('.partnerstudio-front'))
@@ -41,11 +54,18 @@ const extractArticlesFromDom = (): HTMLElement[] => {
   return filtered
 }
 
-const articlesContainerSelector = '#hovedlopet'
+const getObserverRoot = (): HTMLElement => {
+  for (const selector of observerRootSelectors) {
+    const element = document.querySelector(selector)
+    if (element instanceof HTMLElement) return element
+  }
+
+  return (document.body ?? document.documentElement) as HTMLElement
+}
 
 export const ArticleProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [articles, setArticles] = useState<HTMLElement[]>(extractArticlesFromDom)
-  const mainElementRef = useRef(document.querySelector(articlesContainerSelector) as HTMLElement)
+  const mainElementRef = useRef<HTMLElement>(getObserverRoot())
   const [observer] = useState<MutationObserver>(() => {
     const observer = new MutationObserver((mutations) => {
       if (didJustAffectAddendum(mutations)) return
@@ -59,6 +79,7 @@ export const ArticleProvider: React.FC<React.PropsWithChildren> = ({ children })
   }, [observer])
 
   const resumeDomObserver = useCallback(() => {
+    mainElementRef.current = getObserverRoot()
     observer.observe(mainElementRef.current, {
       childList: true,
       subtree: true,

@@ -10,6 +10,11 @@ const GlobalStyle: React.FC<{ eyesores: { path: string }[] }> = ({ eyesores }) =
         .partnerstudio-front:has(a[href*='${eyesore.path}']) {
           display: none;
         }
+
+        .dr-edition-wrapper[data-edition-name^='vg-partnerstudio']:has(a[href*='${eyesore.path}']),
+        track-element[data-track-element-type='AdSlot']:has(a[href*='${eyesore.path}']) {
+          display: none;
+        }
       `,
     )}
   />

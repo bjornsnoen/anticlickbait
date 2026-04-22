@@ -9,3 +9,7 @@ export const HostPermissions = [
   'https://www.landevei.no/*',
   'https://www.vektklubb.no/*',
 ] as const
+
+export const StorageKeys = {
+  tapToPreviewEnabled: 'tapToPreviewEnabled',
+} as const

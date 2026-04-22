@@ -15,13 +15,22 @@ browser.runtime.onMessage.addListener(
 )
 
 browser.runtime.onInstalled.addListener(() => {
-  browser.contextMenus.create({
-    id: 'clickbait',
-    title: 'Hide article forever',
-    contexts: ['link'],
-    documentUrlPatterns: ['https://www.vg.no/*'],
-  })
+  if (browser.contextMenus?.create) {
+    browser.contextMenus.create({
+      id: 'clickbait',
+      title: 'Hide article forever',
+      contexts: ['link'],
+      documentUrlPatterns: ['https://www.vg.no/*'],
+    })
+  }
   browser.runtime.openOptionsPage()
 })
 
-browser.contextMenus.onClicked.addListener(({ linkUrl }) => linkUrl && storeEyesore(linkUrl))
+if (browser.contextMenus?.onClicked) {
+  browser.contextMenus.onClicked.addListener(({ linkUrl }) => linkUrl && storeEyesore(linkUrl))
+}
+
+browser.action.onClicked.addListener((tab) => {
+  if (!tab.id) return
+  browser.tabs.sendMessage(tab.id, { type: 'reveal-viewport' })
+})

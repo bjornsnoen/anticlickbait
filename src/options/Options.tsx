@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import browser from 'webextension-polyfill'
 
-import { HostPermissions } from '../constants'
+import { HostPermissions, StorageKeys } from '../constants'
 import './Options.css'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 const ListContainer = styled.div`
   display: flex;
@@ -37,6 +37,20 @@ const ButtonContainer = styled.div`
   }
 `
 
+const Settings = styled.div`
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+
+  label {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+`
+
 function App() {
   const handler = async (all: boolean) => {
     await browser.permissions.request({
@@ -51,10 +65,23 @@ function App() {
     setGrantedPermissions(permissions.origins ?? [])
   }
   const [grantedPermissions, setGrantedPermissions] = useState<string[]>([])
+  const [tapToPreviewEnabled, setTapToPreviewEnabled] = useState(false)
+
+  const handleTapToPreviewChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const enabled = event.target.checked
+    setTapToPreviewEnabled(enabled)
+    await browser.storage.local.set({ [StorageKeys.tapToPreviewEnabled]: enabled })
+  }
 
   useEffect(() => {
     browser.permissions.getAll().then((permissions) => {
       setGrantedPermissions(permissions.origins ?? [])
+    })
+  }, [])
+
+  useEffect(() => {
+    browser.storage.local.get(StorageKeys.tapToPreviewEnabled).then((stored) => {
+      setTapToPreviewEnabled(Boolean(stored[StorageKeys.tapToPreviewEnabled]))
     })
   }, [])
 
@@ -85,6 +112,19 @@ function App() {
         <button onClick={() => handler(true)}>Trykk her for å gi alle tillatelser</button>
         <button onClick={() => handler(false)}>Trykk her for kun vg</button>
       </ButtonContainer>
+
+      <h3>Interaksjon</h3>
+      <Settings>
+        <label>
+          <input
+            type="checkbox"
+            checked={tapToPreviewEnabled}
+            onChange={handleTapToPreviewChange}
+          />
+          Aktiver trykk-for-forhåndsvisning
+        </label>
+        <small>På mobil vil første trykk vise tittel/forfatter, andre trykk åpner saken.</small>
+      </Settings>
     </main>
   )
 }

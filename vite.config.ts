@@ -18,6 +18,7 @@ export default defineConfig({
       browser: target,
       webExtConfig: {
         startUrl: 'https://www.vg.no/',
+        chromiumBinary: process.env.CHROMIUM_BINARY || 'chromium',
         firefox: 'firefoxdeveloperedition',
       },
       manifest: () => {

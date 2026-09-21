@@ -29,8 +29,3 @@ browser.runtime.onInstalled.addListener(() => {
 if (browser.contextMenus?.onClicked) {
   browser.contextMenus.onClicked.addListener(({ linkUrl }) => linkUrl && storeEyesore(linkUrl))
 }
-
-browser.action.onClicked.addListener((tab) => {
-  if (!tab.id) return
-  browser.tabs.sendMessage(tab.id, { type: 'reveal-viewport' })
-})

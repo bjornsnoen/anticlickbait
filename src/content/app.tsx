@@ -91,6 +91,9 @@ export const App: React.FC = () => {
       }
 
       if (event.type === 'focusin') {
+        // Focus-based scroll-into-view is only meant for keyboard navigation of front-page cards
+        if (window.location.pathname !== '/') return
+
         const isReduced = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true
 
         if (!isClickingTracker.current) {

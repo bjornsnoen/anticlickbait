@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill'
 
 import { StorageKeys } from './constants'
 
-const getDefaultTapToPreviewEnabled = async (): Promise<boolean> => {
+export const isAndroid = async (): Promise<boolean> => {
   try {
     const platformInfo = await browser.runtime.getPlatformInfo()
     return platformInfo.os === 'android'
@@ -19,5 +19,5 @@ export const getTapToPreviewEnabled = async (): Promise<boolean> => {
     return value
   }
 
-  return getDefaultTapToPreviewEnabled()
+  return isAndroid()
 }

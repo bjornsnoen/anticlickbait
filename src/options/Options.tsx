@@ -6,15 +6,9 @@ import { getTapToPreviewEnabled } from '../settings'
 import './Options.css'
 import { ChangeEvent, useEffect, useState } from 'react'
 
-const ListContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`
-
 const List = styled.ul`
   list-style-type: none;
   padding: 0;
-  text-align: left;
 
   span {
     color: green;
@@ -22,11 +16,13 @@ const List = styled.ul`
 `
 
 const ButtonContainer = styled.div`
+  max-width: 35ch;
   display: flex;
   flex-direction: column;
   gap: 10px;
   justify-content: space-between;
   button {
+    text-align: center;
     padding: 10px;
     border: none;
     cursor: pointer;
@@ -39,10 +35,10 @@ const ButtonContainer = styled.div`
 `
 
 const Settings = styled.div`
-  margin: 2rem auto;
+  margin: 2rem 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
 
   label {
@@ -67,11 +63,25 @@ function App() {
   }
   const [grantedPermissions, setGrantedPermissions] = useState<string[]>([])
   const [tapToPreviewEnabled, setTapToPreviewEnabled] = useState(false)
+  const [hideVgPlus, setHideVgPlus] = useState(false)
+  const [hideAds, setHideAds] = useState(false)
 
   const handleTapToPreviewChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const enabled = event.target.checked
     setTapToPreviewEnabled(enabled)
     await browser.storage.local.set({ [StorageKeys.tapToPreviewEnabled]: enabled })
+  }
+
+  const handleHideVgPlusChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const enabled = event.target.checked
+    setHideVgPlus(enabled)
+    await browser.storage.local.set({ [StorageKeys.hideVgPlus]: enabled })
+  }
+
+  const handleHideAdsChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const enabled = event.target.checked
+    setHideAds(enabled)
+    await browser.storage.local.set({ [StorageKeys.hideAds]: enabled })
   }
 
   useEffect(() => {
@@ -83,6 +93,10 @@ function App() {
   useEffect(() => {
     getTapToPreviewEnabled().then((enabled) => {
       setTapToPreviewEnabled(enabled)
+    })
+    browser.storage.local.get([StorageKeys.hideVgPlus, StorageKeys.hideAds]).then((stored) => {
+      setHideVgPlus(stored[StorageKeys.hideVgPlus] === true)
+      setHideAds(stored[StorageKeys.hideAds] === true)
     })
   }, [])
 
@@ -100,18 +114,16 @@ function App() {
         Merk at VG ofte linker til andre nyhetskilder, og at det derfor kan være lurt å gi tilatelse
         til flere sider.
       </p>
-      <ListContainer>
-        <List>
-          {HostPermissions.map((permission) => (
-            <li key={permission}>
-              <span>{grantedPermissions.includes(permission) ? '✓' : ''}</span> {permission}
-            </li>
-          ))}
-        </List>
-      </ListContainer>
+      <List>
+        {HostPermissions.map((permission) => (
+          <li key={permission}>
+            <span>{grantedPermissions.includes(permission) ? '✓' : ''}</span> {permission}
+          </li>
+        ))}
+      </List>
       <ButtonContainer>
         <button onClick={() => handler(true)}>Trykk her for å gi alle tillatelser</button>
-        <button onClick={() => handler(false)}>Trykk her for kun vg</button>
+        <button onClick={() => handler(false)}>Trykk her for kun VG</button>
       </ButtonContainer>
 
       <h3>Interaksjon</h3>
@@ -125,6 +137,18 @@ function App() {
           Aktiver trykk-for-forhåndsvisning
         </label>
         <small>På mobil vil første trykk vise tittel/forfatter, andre trykk åpner saken.</small>
+      </Settings>
+
+      <h3>Innhold</h3>
+      <Settings>
+        <label>
+          <input type="checkbox" checked={hideVgPlus} onChange={handleHideVgPlusChange} />
+          Skjul innhold merket VG+
+        </label>
+        <label>
+          <input type="checkbox" checked={hideAds} onChange={handleHideAdsChange} />
+          Skul annonsørinnhold
+        </label>
       </Settings>
     </main>
   )

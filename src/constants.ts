@@ -12,4 +12,6 @@ export const HostPermissions = [
 
 export const StorageKeys = {
   tapToPreviewEnabled: 'tapToPreviewEnabled',
+  hideVgPlus: 'hideVgPlus',
+  hideAds: 'hideAds',
 } as const

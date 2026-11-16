@@ -74,7 +74,7 @@ jobs:
         if: |
           steps.check_version.outputs.has-updated == 'true' &&
           matrix.target == 'chrome'
-        uses: mnao305/chrome-extension-upload@v6
+        uses: mnao305/chrome-extension-upload@fdfe79400af990f5145a319e834aee64907ccff4 # v6.0.0
         with:
           extension-id: ${{ secrets.GWS_EXTENSION_ID }}
           client-id: ${{ secrets.GWS_CLIENT_ID }}

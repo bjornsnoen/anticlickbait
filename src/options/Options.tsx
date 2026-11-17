@@ -147,7 +147,7 @@ function App() {
         </label>
         <label>
           <input type="checkbox" checked={hideAds} onChange={handleHideAdsChange} />
-          Skul annonsørinnhold
+          Skjul annonsørinnhold
         </label>
       </Settings>
     </main>

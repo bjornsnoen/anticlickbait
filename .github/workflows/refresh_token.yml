@@ -6,9 +6,9 @@ on:
 
 jobs:
   fetch_token:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: cardinalby/google-api-fetch-token-action@v1
+      - uses: cardinalby/google-api-fetch-token-action@c1ba7cd4e5be6dcdf0141b63a830f73ff64b6f7f # v1
         with:
           clientId: ${{ secrets.GWS_CLIENT_ID }}
           clientSecret: ${{ secrets.GWS_CLIENT_SECRET }}
